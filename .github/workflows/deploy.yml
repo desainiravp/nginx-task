@@ -30,5 +30,5 @@ jobs:
 
       - name: Deploy to K3s
         run: |
-          kubectl apply -f k8s/deploy.yml
+          kubectl apply -f deploy.yml
 
