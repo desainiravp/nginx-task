@@ -1,0 +1,34 @@
+name: Deploy to K3s
+
+on:
+  push:
+    branches:
+      - master # Trigger deployment when pushing to main branch
+  pull_request:
+    branches:
+      - master # Trigger deployment on PR to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'v1.21.0'  # Specify your kubectl version
+
+      - name: Set up K3s kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.K3S_KUBE_CONFIG }}" > $HOME/.kube/config
+        env:
+          K3S_KUBE_CONFIG: ${{ secrets.K3S_KUBE_CONFIG }}
+
+      - name: Deploy to K3s
+        run: |
+          kubectl apply -f k8s/deploy.yml
+
